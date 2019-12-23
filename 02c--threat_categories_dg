@@ -1,0 +1,16 @@
+ltm data-group internal threat_categories_dg {
+    records {
+        "Denial of Service" { }
+        "Infected Sources" { }
+        "Spam Sources" { }
+        "Web Attacks" { }
+        "Windows Exploits" { }
+        BotNets { }
+        Illegal { }
+        Networks { }
+        Phishing { }
+        Proxy { }
+        Scanners { }
+    }
+    type string
+}
