@@ -1,0 +1,10 @@
+when FLOW_INIT {
+    set ipaddr [IP::client_addr]
+    set clientip [whereis $ipaddr country]
+    if { not [class match $clientip equals ipgeo_country_code] } {
+        log local0. "Geo Block - VS: [IP::local_addr]: [IP::client_addr]"  
+        drop
+    }
+    else { log local0. "Geo Permit - VS: [IP::local_addr]: [IP::client_addr]" 
+    }
+}
