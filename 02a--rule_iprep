@@ -1,0 +1,31 @@
+when RULE_INIT {
+    # IP intelligence (reputation) control.
+    # 0 = reputation filter off, 1 = reputation filter on.
+    set static::ip_reputation_control 1
+
+    # IP intelligence categories data group. Any categories in this DG will be blocked based on the source IP.
+    set static::threat_categories_dg "threat_categories_dg"
+
+    # IP intelligence whitelist data group. Any IP address in this DG will bypass IP reputation filtering.
+    set static::ip_reputation_whitelist_dg "ip_reputation_whitelist_dg"
+
+    # Debug logging control
+    # 0 = no debug logging, 1 = debug logging.
+    set static::debug_ip_reputation 1
+}
+
+when FLOW_INIT {
+    # Set parameters for the request
+    set client_ip [IP::client_addr]
+
+    # Use IP intelligence (reputation) on source IP. Bypass filtering if IP is in the Whitelist.
+    # If bad IP reputation is found, drop the request.
+    if { (($static::ip_reputation_control) and (![class match $client_ip equals $static::ip_reputation_whitelist_dg])) } {
+        set threat_categories [IP::reputation $client_ip]
+
+        if { [class match $threat_categories contains $static::threat_categories_dg] } {
+            if { $static::debug_ip_reputation } { log local0. "IP Rep Block - VS: [IP::local_addr]: $client_ip, Threat Category: $threat_categories, Country: [whereis $client_ip country]" }
+            drop
+        }
+    }
+}
