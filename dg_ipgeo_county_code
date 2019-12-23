@@ -1,0 +1,8 @@
+ltm data-group internal ipgeo_country_code {
+    records {
+        country_code {
+            data US
+        }
+    }
+    type string
+}
